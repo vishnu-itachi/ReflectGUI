@@ -5,6 +5,13 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
+
+#include "ReflectRNG/Scene.cpp"
+
+#define DEFAULT_SCREEN_WIDTH 1600
+#define DEFAULT_SCREEN_HEIGHT 900
+#define TIME_STEP 0.005
 
 static std::string GetShadderFromSource(const std::string& filepath)
 {
@@ -57,8 +64,32 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program);
-	glValidateProgram(program);
+	int result;
+	glGetProgramiv(program, GL_LINK_STATUS, &result);
+	if (!result)
+	{
+		int length;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		auto message = (char*)alloca(length * sizeof(char));
+		glGetProgramInfoLog(program, length, &length, message);
 
+		std::cout << "Failed to link" << std::endl;
+		std::cout << message << std::endl;
+		return 0;
+	}
+	glValidateProgram(program);
+	glGetProgramiv(program, GL_VALIDATE_STATUS, &result);
+	if (!result)
+	{
+		int length;
+		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+		auto message = (char*)alloca(length * sizeof(char));
+		glGetProgramInfoLog(program, length, &length, message);
+
+		std::cout << "Failed to link" << std::endl;
+		std::cout << message << std::endl;
+		return 0;
+	}
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
@@ -66,6 +97,34 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 
 }
 
+void runProgram(GLFWwindow* window, unsigned int program)
+{
+
+	//std::vector<Circle> circles = { Circle({500, 500}, 50) };
+	//Ray ray = Ray({ 100, 500 }, 45);
+	//Scene scene = Scene(circles, ray);
+
+	int numberCircles = 2;
+	float circles[2][3] = { {500, 500, 100}, {700, 500, 100} };
+	while (!glfwWindowShouldClose(window))
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		glUniform1i(glGetUniformLocation(program, "numberCircles"), numberCircles);
+		for (int i = 0; i < numberCircles; i++)
+		{
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].x").c_str()), circles[i][0]);
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].y").c_str()), circles[i][1]);
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), circles[i][2]);
+		}
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
+
+		glfwSwapBuffers(window);
+
+		glfwPollEvents();
+		glfwSetTime(0);
+	}
+}
 
 int main(void)
 {
@@ -75,7 +134,7 @@ int main(void)
 		return -1;
 
 
-	window = glfwCreateWindow(640, 480, "Hello World", nullptr, nullptr);
+	window = glfwCreateWindow(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, "Hello World", nullptr, nullptr);
 	if (!window)
 	{
 		glfwTerminate();
@@ -91,37 +150,11 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	float positions[6] = { 0.0f, 0.0f ,0.0f, 0.5f ,0.5f, 0.0f };
-
-
-	unsigned int buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
-	glEnableVertexAttribArray(0);
-
-	std::string vertexsource = GetShadderFromSource("res/shaders/Vertex.shader");
-	std::string fragmentsource = GetShadderFromSource("res/shaders/Fragment.shader");
-	//std::cout << vertexsource << std::endl;
-	//std::cout << fragmentsource << std::endl;
+	std::string vertexsource = GetShadderFromSource("res/shaders/Vertex.glsl");
+	std::string fragmentsource = GetShadderFromSource("res/shaders/Fragment.glsl");
 	unsigned int program = CreateShader(vertexsource, fragmentsource);
 	glUseProgram(program);
-
-	while (!glfwWindowShouldClose(window))
-	{
-
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glfwSwapBuffers(window);
-
-		glfwPollEvents();
-		glfwSetTime(0);
-
-	}
+	runProgram(window, program);
 	glDeleteProgram(program);
 	glfwTerminate();
 	return 0;
