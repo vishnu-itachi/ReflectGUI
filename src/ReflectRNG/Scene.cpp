@@ -1,28 +1,26 @@
 #include <tuple>
 #include <vector>
-#include "Circle.cpp"
-#include "Ray.cpp"
+#include <cmath>
 
-class Scene
+#include "Scene.h"
+
+
+float getSlope(std::tuple <float, float> point1, std::tuple <float, float> point2)
 {
-public:
-	std::vector<Circle> circles;
-	std::vector<Ray>  rays;
+	return std::get<1>(point1) - std::get<1>(point2) / std::get<0>(point1) - std::get<0>(point2);
+}
 
-	Scene(std::vector<Circle> circles, std::vector<Ray> rays)
-		:circles(circles), rays(rays) {}
+void Scene::calculateNextRay()
+{
+	Ray currentRay = rays.back();
+	// Calculate the current ray's intersection with the circles and add the new ray to the scene.
+	std::tuple <float, float> intersection = currentRay.getFirstIntersection(circles);
+	// Calculate the angle of the reflected ray.
+	//float m1 = getSlope(intersection, currentRay.start);
+	//float m2 = getSlope(intersection, currentRay.start);
+}
 
-	Scene(std::vector<Circle> circles, Ray ray)
-		:circles(circles)
-	{
-		rays.push_back(ray);
-	}
+void Scene::calculateAllRays()
+{
 
-	void calculateNextRay()
-	{
-		Ray currentRay = rays.back();
-		// Calculate the current ray's intersection with the circles and add the new ray to the scene.
-	}
-
-
-};
+}

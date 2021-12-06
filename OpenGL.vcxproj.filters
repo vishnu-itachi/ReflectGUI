@@ -32,4 +32,9 @@
     <None Include="res\shaders\Vertex.shader" />
     <None Include="res\shaders\Fragment.shader" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ReflectRNG\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

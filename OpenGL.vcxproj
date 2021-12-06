@@ -157,6 +157,9 @@
     <None Include="res\shaders\Fragment.shader" />
     <None Include="res\shaders\Vertex.shader" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ReflectRNG\Scene.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

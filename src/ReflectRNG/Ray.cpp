@@ -1,14 +1,26 @@
 #include <tuple>
-class Ray
+#include <vector>
+#include <cmath>
+
+
+#include "Scene.h"
+
+float getDistance(std::tuple <float, float> point1, std::tuple <float, float> point2)
 {
-public:
-	std::tuple <float, float> start;
-	std::tuple <float, float> end;
-	float angle = NULL;
+	return std::sqrt(pow(std::get<0>(point1) - std::get<0>(point2), 2) + pow((std::get<1>(point1) - std::get<1>(point2)), 2));
+}
 
-	Ray(std::tuple <float, float> start, float angle)
-		:start(start), angle(angle) {}
-
-	Ray(std::tuple <float, float> start, std::tuple <float, float> end)
-		:start(start), end(end) {}
-};
+std::tuple <float, float> Ray::getFirstIntersection(std::vector<Circle> circles)
+{
+	std::tuple <float, float> firstIntersection;
+	float minDistance = FLT_MAX;
+	for (auto& circle : circles) {
+		for (auto& intersection : circle.getIntersections(*this)) {
+			if (minDistance < getDistance(start, intersection)) {
+				minDistance = getDistance(start, intersection);
+				firstIntersection = intersection;
+			}
+		}
+	}
+	return firstIntersection;
+}
