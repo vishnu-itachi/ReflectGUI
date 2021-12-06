@@ -12,6 +12,17 @@
 #define DEFAULT_SCREEN_WIDTH 1600
 #define DEFAULT_SCREEN_HEIGHT 900
 #define TIME_STEP 0.005
+#define VERTEX_SHADER_FILENAME "res/shaders/Vertex.vert"
+#define FRAGMENT_SHADER_FILENAME "res/shaders/Fragment.frag"
+
+unsigned int VS = 0;
+unsigned int FS = 0;
+std::string vertexShaderString = "";
+std::string fragmentShaderString = "";
+
+//static bool rerun(const std::string& filepath) {
+//
+//}
 
 static std::string GetShadderFromSource(const std::string& filepath)
 {
@@ -58,11 +69,11 @@ static unsigned int CompileShader(unsigned int type, const std::string& source)
 static unsigned int CreateShader(const std::string& vertexshader, const std::string& fragmentshader)
 {
 	unsigned int program = glCreateProgram();
-	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexshader);
-	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentshader);
+	VS = CompileShader(GL_VERTEX_SHADER, vertexshader);
+	FS = CompileShader(GL_FRAGMENT_SHADER, fragmentshader);
 
-	glAttachShader(program, vs);
-	glAttachShader(program, fs);
+	glAttachShader(program, VS);
+	glAttachShader(program, FS);
 	glLinkProgram(program);
 	int result;
 	glGetProgramiv(program, GL_LINK_STATUS, &result);
@@ -90,10 +101,20 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 		std::cout << message << std::endl;
 		return 0;
 	}
-	glDeleteShader(vs);
-	glDeleteShader(fs);
+	glDeleteShader(VS);
+	glDeleteShader(FS);
 
 	return program;
+
+}
+
+
+
+static unsigned int ReloadShaders(unsigned int program)
+{
+	std::string vertexsource = GetShadderFromSource(VERTEX_SHADER_FILENAME);
+	std::string fragmentsource = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
+
 
 }
 
@@ -123,6 +144,11 @@ void runProgram(GLFWwindow* window, unsigned int program)
 
 		glfwPollEvents();
 		glfwSetTime(0);
+		glDeleteProgram(program);
+		std::string vertexsource = GetShadderFromSource(VERTEX_SHADER_FILENAME);
+		std::string fragmentsource = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
+		unsigned int program = CreateShader(vertexsource, fragmentsource);
+		glUseProgram(program);
 	}
 }
 
@@ -143,6 +169,7 @@ int main(void)
 
 
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
 
 	if (glewInit() != GLEW_OK)
 		std::cout << "Error" << std::endl;
@@ -150,9 +177,9 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	std::string vertexsource = GetShadderFromSource("res/shaders/Vertex.glsl");
-	std::string fragmentsource = GetShadderFromSource("res/shaders/Fragment.glsl");
-	unsigned int program = CreateShader(vertexsource, fragmentsource);
+	vertexShaderString = GetShadderFromSource(VERTEX_SHADER_FILENAME);
+	fragmentShaderString = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
+	unsigned int program = CreateShader(vertexShaderString, fragmentShaderString);
 	glUseProgram(program);
 	runProgram(window, program);
 	glDeleteProgram(program);
