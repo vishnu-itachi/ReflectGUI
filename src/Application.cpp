@@ -120,10 +120,11 @@ void runProgram(GLFWwindow* window, unsigned int program)
 			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), circles[i][2]);
 		}
 
-		glUniform1f(glGetUniformLocation(program, "ray.x"), 100);
-		glUniform1f(glGetUniformLocation(program, "ray.y"), 100);
-		glUniform1f(glGetUniformLocation(program, "ray.angle"), 30);
-		std::cout << glGetUniformLocation(program, "ray.angle") << std::endl;
+		glUniform2f(glGetUniformLocation(program, "ray.start"), 100, 100);
+		double posx, posy;
+		glfwGetCursorPos(window, &posx, &posy);
+		glUniform2f(glGetUniformLocation(program, "ray.end"), posx, DEFAULT_SCREEN_HEIGHT - posy);
+		glUniform1f(glGetUniformLocation(program, "ray.angle"), -400);
 
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 
