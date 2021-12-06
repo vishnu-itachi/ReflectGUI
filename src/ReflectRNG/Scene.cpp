@@ -1,6 +1,7 @@
 #include <tuple>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 #include "Scene.h"
 
@@ -10,23 +11,45 @@ float getSlope(std::tuple <float, float> point1, std::tuple <float, float> point
 	return std::get<1>(point1) - std::get<1>(point2) / std::get<0>(point1) - std::get<0>(point2);
 }
 
-void Scene::calculateNextRay()
+bool Scene::calculateNextRay()
 {
 	Ray currentRay = rays.back();
 	rays.pop_back();
-	// Calculate the current ray's intersection with the circles and add the new ray to the scene.
-	std::optional<Point> intersection = currentRay.getFirstIntersection(circles);
+	// Change the Current Ray's end point and make it a line segment.
+	std::optional<std::pair<Point, Circle>> intersection = currentRay.getFirstIntersection(circles);
 	if (intersection.has_value()) {
-		currentRay.end = intersection.value();
+		currentRay.end = intersection.value().first;
 		currentRay.angle = -400;
+		rays.push_back(currentRay);
+		
+		// Add the new Reflected Ray to the end of rays.
+		Point intersectionPoint = intersection.value().first;
+		Circle circle = intersection.value().second;
+		
+		Point p21 = currentRay.start - intersectionPoint;
+		Point p32 = intersectionPoint - circle.center;
+		float d = p21.length();
+		//std::cout << circle.center.x << " " << circle.center.y << " " << circle.radius << std::endl;
+		//std::cout << d << " " << intersectionPoint.x << " " << intersectionPoint.y << std::endl;
+		float cos = (p21.x * p32.x + p21.y * p32.y) / (d * circle.radius);
+		float numer = 2 * cos * d * (p32.y) - circle.radius * (p21.y);
+		float denom = 2 * cos * d * (p32.x) - circle.radius * (p21.x);
+		float angle = atan(numer / denom) * 180 / PI;
+		std::cout << cos << " " << numer << " " << denom << " " << numer/denom << " " << angle << std::endl;
+		//if (angle < 0)
+		//	angle += 180;
+		Ray newRay = Ray(intersectionPoint, angle);
+		rays.push_back(newRay);
+		return true;
 	}
 	rays.push_back(currentRay);
-	// Calculate the angle of the reflected ray.
-	//float m1 = getSlope(intersection, currentRay.start);
-	//float m2 = getSlope(intersection, currentRay.start);
+	return false;
 }
 
 void Scene::calculateAllRays()
 {
-
+	while (calculateNextRay()) {
+		Ray currentRay = rays.back();
+		std::cout << currentRay.angle << std::endl;
+	}
 }

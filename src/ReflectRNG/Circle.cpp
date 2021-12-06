@@ -4,8 +4,6 @@
 
 #include "Scene.h"
 
-#define PI 3.141592653589793
-
 std::vector<Point> Circle::getIntersections(Ray ray)
 {
 	float x1 = ray.start.x - center.x;
