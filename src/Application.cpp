@@ -15,14 +15,6 @@
 #define VERTEX_SHADER_FILENAME "res/shaders/Vertex.vert"
 #define FRAGMENT_SHADER_FILENAME "res/shaders/Fragment.frag"
 
-unsigned int VS = 0;
-unsigned int FS = 0;
-std::string vertexShaderString = "";
-std::string fragmentShaderString = "";
-
-//static bool rerun(const std::string& filepath) {
-//
-//}
 
 static std::string GetShadderFromSource(const std::string& filepath)
 {
@@ -65,15 +57,14 @@ static unsigned int CompileShader(unsigned int type, const std::string& source)
 	return id;
 }
 
-
 static unsigned int CreateShader(const std::string& vertexshader, const std::string& fragmentshader)
 {
 	unsigned int program = glCreateProgram();
-	VS = CompileShader(GL_VERTEX_SHADER, vertexshader);
-	FS = CompileShader(GL_FRAGMENT_SHADER, fragmentshader);
+	unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexshader);
+	unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentshader);
 
-	glAttachShader(program, VS);
-	glAttachShader(program, FS);
+	glAttachShader(program, vs);
+	glAttachShader(program, fs);
 	glLinkProgram(program);
 	int result;
 	glGetProgramiv(program, GL_LINK_STATUS, &result);
@@ -101,20 +92,10 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 		std::cout << message << std::endl;
 		return 0;
 	}
-	glDeleteShader(VS);
-	glDeleteShader(FS);
+	glDeleteShader(vs);
+	glDeleteShader(fs);
 
 	return program;
-
-}
-
-
-
-static unsigned int ReloadShaders(unsigned int program)
-{
-	std::string vertexsource = GetShadderFromSource(VERTEX_SHADER_FILENAME);
-	std::string fragmentsource = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
-
 
 }
 
@@ -138,17 +119,18 @@ void runProgram(GLFWwindow* window, unsigned int program)
 			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].y").c_str()), circles[i][1]);
 			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), circles[i][2]);
 		}
+
+		glUniform1f(glGetUniformLocation(program, "ray.x"), 100);
+		glUniform1f(glGetUniformLocation(program, "ray.y"), 100);
+		glUniform1f(glGetUniformLocation(program, "ray.angle"), 30);
+		std::cout << glGetUniformLocation(program, "ray.angle") << std::endl;
+
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
 		glfwSetTime(0);
-		glDeleteProgram(program);
-		std::string vertexsource = GetShadderFromSource(VERTEX_SHADER_FILENAME);
-		std::string fragmentsource = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
-		unsigned int program = CreateShader(vertexsource, fragmentsource);
-		glUseProgram(program);
 	}
 }
 
@@ -177,8 +159,8 @@ int main(void)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	vertexShaderString = GetShadderFromSource(VERTEX_SHADER_FILENAME);
-	fragmentShaderString = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
+	std::string vertexShaderString = GetShadderFromSource(VERTEX_SHADER_FILENAME);
+	std::string fragmentShaderString = GetShadderFromSource(FRAGMENT_SHADER_FILENAME);
 	unsigned int program = CreateShader(vertexShaderString, fragmentShaderString);
 	glUseProgram(program);
 	runProgram(window, program);
