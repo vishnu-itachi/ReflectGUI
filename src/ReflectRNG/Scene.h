@@ -1,32 +1,41 @@
 #pragma once
+#include <optional>
+
 class Circle;
 class Ray;
+
+class Point
+{
+public:
+	float x;
+	float y;
+};
 
 class Ray
 {
 public:
-	std::tuple <float, float> start;
-	std::tuple <float, float> end;
+	Point start;
+	Point end;
 	float angle = NULL;
 
-	Ray(std::tuple <float, float> start, float angle)
+	Ray(Point start, float angle)
 		:start(start), angle(angle) {}
 
-	Ray(std::tuple <float, float> start, std::tuple <float, float> end)
+	Ray(Point start, Point end)
 		:start(start), end(end) {}
 
-	std::tuple <float, float> getFirstIntersection(std::vector<Circle> circles);
+	std::optional<Point> getFirstIntersection(std::vector<Circle> circles);
 };
 
 class Circle
 {
 public:
-	std::tuple <float, float> position;
+	Point center;
 	float radius;
 
-	Circle(std::tuple <float, float> position, float radius)
-		:position(position), radius(radius) {}
-	std::vector< std::tuple <float, float>> getIntersections(Ray ray);
+	Circle(Point center, float radius)
+		:center(center), radius(radius) {}
+	std::vector<Point> getIntersections(Ray ray);
 };
 
 class Scene

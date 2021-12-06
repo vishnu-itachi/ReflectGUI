@@ -1,26 +1,25 @@
-#include <tuple>
 #include <vector>
 #include <cmath>
 
 
 #include "Scene.h"
 
-float getDistance(std::tuple <float, float> point1, std::tuple <float, float> point2)
+inline float getDistance(Point point1, Point point2)
 {
-	return std::sqrt(pow(std::get<0>(point1) - std::get<0>(point2), 2) + pow((std::get<1>(point1) - std::get<1>(point2)), 2));
+	return std::sqrt(pow(point1.x - point2.x, 2) + pow(point1.y - point2.y, 2));
 }
 
-std::tuple <float, float> Ray::getFirstIntersection(std::vector<Circle> circles)
+std::optional<Point> Ray::getFirstIntersection(std::vector<Circle> circles)
 {
-	std::tuple <float, float> firstIntersection;
+	Point firstIntersection;
 	float minDistance = FLT_MAX;
 	for (auto& circle : circles) {
 		for (auto& intersection : circle.getIntersections(*this)) {
-			if (minDistance < getDistance(start, intersection)) {
+			if (minDistance > getDistance(start, intersection)) {
 				minDistance = getDistance(start, intersection);
 				firstIntersection = intersection;
 			}
 		}
 	}
-	return firstIntersection;
+	return (minDistance == FLT_MAX) ? std::optional<Point>() : firstIntersection;
 }

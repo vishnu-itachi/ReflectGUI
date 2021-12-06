@@ -102,29 +102,32 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 void runProgram(GLFWwindow* window, unsigned int program)
 {
 
-	//std::vector<Circle> circles = { Circle({500, 500}, 50) };
-	//Ray ray = Ray({ 100, 500 }, 45);
-	//Scene scene = Scene(circles, ray);
-
-	int numberCircles = 2;
-	float circles[2][3] = { {500, 500, 100}, {700, 500, 100} };
+	std::vector<Circle> circles = { Circle({500, 500}, 100) };
+	Ray ray = Ray({ 100, 100 }, 60);
+	Scene scene = Scene(circles, ray);
+	std::cout << scene.rays.back().end.x << "  " << scene.rays.back().end.y << std::endl;
+	std::cout << scene.rays.back().angle << std::endl;
+	scene.calculateNextRay();
+	std::cout << scene.rays.back().end.x << "  " << scene.rays.back().end.y << std::endl;
+	std::cout << scene.rays.back().angle << std::endl;
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUniform1i(glGetUniformLocation(program, "numberCircles"), numberCircles);
-		for (int i = 0; i < numberCircles; i++)
+		glUniform1i(glGetUniformLocation(program, "numberCircles"), scene.circles.size());
+		for (int i = 0; i < scene.circles.size(); i++)
 		{
-			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].x").c_str()), circles[i][0]);
-			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].y").c_str()), circles[i][1]);
-			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), circles[i][2]);
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].x").c_str()), scene.circles[i].center.x);
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].y").c_str()), scene.circles[i].center.y);
+			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), scene.circles[i].radius);
 		}
 
-		glUniform2f(glGetUniformLocation(program, "ray.start"), 100, 100);
-		double posx, posy;
-		glfwGetCursorPos(window, &posx, &posy);
-		glUniform2f(glGetUniformLocation(program, "ray.end"), posx, DEFAULT_SCREEN_HEIGHT - posy);
-		glUniform1f(glGetUniformLocation(program, "ray.angle"), -400);
+		glUniform2f(glGetUniformLocation(program, "ray.start"), scene.rays.back().start.x, scene.rays.back().start.y);
+		//double posx, posy;
+		//glfwGetCursorPos(window, &posx, &posy);
+		//glUniform2f(glGetUniformLocation(program, "ray.end"), posx, DEFAULT_SCREEN_HEIGHT - posy);
+		glUniform2f(glGetUniformLocation(program, "ray.end"), scene.rays.back().end.x, scene.rays.back().end.y);
+		glUniform1f(glGetUniformLocation(program, "ray.angle"), scene.rays.back().angle);
 
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 

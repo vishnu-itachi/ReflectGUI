@@ -22,7 +22,8 @@ uniform struct Ray
 
 out vec4 out_color;
 
-#define RAY_THICCNESS 5
+#define RAY_THICCNESS 2
+#define RAY_LENGTH 500
 
 void drawCircle(float x, float y, float radius)
 {
@@ -35,8 +36,8 @@ void drawRay(Ray ray)
 {
 	float x = gl_FragCoord.x;
 	float y = gl_FragCoord.y;
-	float x2 = ray.start.x + 200 * cos(radians(ray.angle));
-	float y2 = ray.start.y + 200 * sin(radians(ray.angle));
+	float x2 = ray.start.x + RAY_LENGTH * cos(radians(ray.angle));
+	float y2 = ray.start.y + RAY_LENGTH * sin(radians(ray.angle));
 	vec2 p1 = ray.start;
 	vec2 p2 = (ray.angle < -360) ? ray.end: vec2(x2, y2);
 	vec2 p3 = {x, y};
