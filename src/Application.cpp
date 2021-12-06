@@ -7,7 +7,7 @@
 #include <sstream>
 #include <vector>
 
-#include "ReflectRNG/Scene.cpp"
+#include "ReflectRNG/Scene.h"
 
 #define DEFAULT_SCREEN_WIDTH 1600
 #define DEFAULT_SCREEN_HEIGHT 900

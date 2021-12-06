@@ -1,4 +1,7 @@
 #pragma once
+class Circle;
+class Ray;
+
 class Ray
 {
 public:
