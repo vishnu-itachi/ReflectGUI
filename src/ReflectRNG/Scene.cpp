@@ -31,13 +31,11 @@ bool Scene::calculateNextRay()
 		float d = p21.length();
 		//std::cout << circle.center.x << " " << circle.center.y << " " << circle.radius << std::endl;
 		//std::cout << d << " " << intersectionPoint.x << " " << intersectionPoint.y << std::endl;
-		float cos = (p21.x * p32.x + p21.y * p32.y) / (d * circle.radius);
+		float cos = p21.dot(p32) / (d * circle.radius);
 		float numer = 2 * cos * d * (p32.y) - circle.radius * (p21.y);
 		float denom = 2 * cos * d * (p32.x) - circle.radius * (p21.x);
-		float angle = atan(numer / denom) * 180 / PI;
-		std::cout << cos << " " << numer << " " << denom << " " << numer/denom << " " << angle << std::endl;
-		//if (angle < 0)
-		//	angle += 180;
+		float angle = atan2(numer, denom) * 180 / PI;
+		//std::cout << cos << " " << numer << " " << denom << " " << numer/denom << " " << angle << std::endl;
 		Ray newRay = Ray(intersectionPoint, angle);
 		rays.push_back(newRay);
 		return true;

@@ -102,7 +102,7 @@ static unsigned int CreateShader(const std::string& vertexshader, const std::str
 void runProgram(GLFWwindow* window, unsigned int program)
 {
 
-	std::vector<Circle> circles = { Circle({500, 500}, 100), Circle({200, 500}, 100) };
+	std::vector<Circle> circles = { Circle({500, 500}, 100), Circle({200, 550}, 100), Circle({500, 350}, 100) };
 	Ray ray = Ray({ 100, 100 }, 50);
 	Scene scene = Scene(circles, ray);
 	scene.calculateAllRays();
