@@ -1,8 +1,7 @@
-#include <vector>
 #include <cmath>
-#include <utility>
 #include <iostream>
-
+#include <utility>
+#include <vector>
 
 #include "Scene.h"
 
@@ -16,10 +15,10 @@ std::optional<std::pair<Point, Circle>> Ray::getFirstIntersection(std::vector<Ci
 	Point firstIntersection;
 	Circle intersectionCircle;
 	float minDistance = FLT_MAX;
-	for (auto& circle : circles) {
+	for (auto &circle : circles) {
 		if (abs((start - circle.center).length() - circle.radius) < 0.01) continue;
 		std::cout << circle.center.x << std::endl;
-		for (auto& intersection : circle.getIntersections(*this)) {
+		for (auto &intersection : circle.getIntersections(*this)) {
 			if (minDistance > getDistance(start, intersection)) {
 				minDistance = getDistance(start, intersection);
 				firstIntersection = intersection;
