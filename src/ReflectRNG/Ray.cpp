@@ -17,7 +17,6 @@ std::optional<std::pair<Point, Circle>> Ray::getFirstIntersection(std::vector<Ci
 	float minDistance = FLT_MAX;
 	for (auto &circle : circles) {
 		if (abs((start - circle.center).length() - circle.radius) < 0.01) continue;
-		std::cout << circle.center.x << std::endl;
 		for (auto &intersection : circle.getIntersections(*this)) {
 			if (minDistance > getDistance(start, intersection)) {
 				minDistance = getDistance(start, intersection);

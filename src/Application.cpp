@@ -108,6 +108,7 @@ void runProgram(GLFWwindow *window, unsigned int program)
 		scene.rays.clear();
 		scene.rays.push_back(Ray({ 100, 100 }, angle));
 		scene.calculateAllRays();
+
 		glUniform1i(glGetUniformLocation(program, "numberCircles"), scene.circles.size());
 		for (int i = 0; i < scene.circles.size(); i++) {
 			glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].x").c_str()), scene.circles[i].center.x);
@@ -120,7 +121,6 @@ void runProgram(GLFWwindow *window, unsigned int program)
 			glUniform2f(glGetUniformLocation(program, ("rays[" + std::to_string(i) + "].end").c_str()), scene.rays[i].end.x, scene.rays[i].end.y);
 			glUniform1f(glGetUniformLocation(program, ("rays[" + std::to_string(i) + "].angle").c_str()), scene.rays[i].angle);
 		}
-
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 
 		glfwSwapBuffers(window);
