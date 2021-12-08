@@ -20,11 +20,7 @@ static std::string GetShadderFromSource(const std::string &filepath)
 	std::ifstream stream(filepath);
 	std::string line;
 	std::stringstream ss;
-
-	while (getline(stream, line)) {
-		ss << line << "\n";
-	}
-
+	while (getline(stream, line)) ss << line << "\n";
 	return ss.str();
 }
 
@@ -53,6 +49,22 @@ static unsigned int CompileShader(unsigned int type, const std::string &source)
 	return id;
 }
 
+static bool CheckForError(unsigned int program, int whatToCheck)
+{
+	int result;
+	glGetProgramiv(program, whatToCheck, &result);
+	if (result) return false;
+
+	int length;
+	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
+	auto message = (char *) alloca(length * sizeof(char));
+	glGetProgramInfoLog(program, length, &length, message);
+
+	std::cout << "Failed to link" << std::endl;
+	std::cout << message << std::endl;
+	return true;
+}
+
 static unsigned int CreateShader(const std::string &vertexshader, const std::string &fragmentshader)
 {
 	unsigned int program = glCreateProgram();
@@ -62,30 +74,9 @@ static unsigned int CreateShader(const std::string &vertexshader, const std::str
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program);
-	int result;
-	glGetProgramiv(program, GL_LINK_STATUS, &result);
-	if (!result) {
-		int length;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-		auto message = (char *) alloca(length * sizeof(char));
-		glGetProgramInfoLog(program, length, &length, message);
-
-		std::cout << "Failed to link" << std::endl;
-		std::cout << message << std::endl;
-		return 0;
-	}
+	if (CheckForError(program, GL_LINK_STATUS)) return 0;
 	glValidateProgram(program);
-	glGetProgramiv(program, GL_VALIDATE_STATUS, &result);
-	if (!result) {
-		int length;
-		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-		auto message = (char *) alloca(length * sizeof(char));
-		glGetProgramInfoLog(program, length, &length, message);
-
-		std::cout << "Failed to link" << std::endl;
-		std::cout << message << std::endl;
-		return 0;
-	}
+	if (CheckForError(program, GL_VALIDATE_STATUS)) return 0;
 	glDeleteShader(vs);
 	glDeleteShader(fs);
 
@@ -94,10 +85,9 @@ static unsigned int CreateShader(const std::string &vertexshader, const std::str
 
 void runProgram(GLFWwindow *window, unsigned int program)
 {
-
-	std::vector<Circle> circles = { Circle({ 500, 500 }, 100),
-		                            Circle({ 200, 550 }, 100),
-		                            Circle({ 500, 350 }, 100) };
+	std::vector<Circle> circles { Circle({ 500, 500 }, 100),
+		                          Circle({ 200, 550 }, 100),
+		                          Circle({ 500, 350 }, 100) };
 	Ray ray = Ray({ 100, 100 }, 50);
 	Scene scene = Scene(circles, ray);
 	while (!glfwWindowShouldClose(window)) {
