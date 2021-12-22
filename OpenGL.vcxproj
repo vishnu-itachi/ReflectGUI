@@ -152,12 +152,14 @@
     <ClCompile Include="src\ReflectRNG\Circle.cpp" />
     <ClCompile Include="src\ReflectRNG\Ray.cpp" />
     <ClCompile Include="src\ReflectRNG\Scene.cpp" />
+    <ClCompile Include="src\ReflectGUI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Fragment.shader" />
     <None Include="res\shaders\Vertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\ReflectGUI.h" />
     <ClInclude Include="src\ReflectRNG\Scene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

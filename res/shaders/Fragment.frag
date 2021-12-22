@@ -4,7 +4,7 @@ precision mediump float;
 out vec4 out_color;
 
 #define RAY_THICCNESS 2
-#define RAY_LENGTH 500
+#define RAY_LENGTH 2000
 
 struct Circle
 {

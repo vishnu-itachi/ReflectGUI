@@ -1,5 +1,8 @@
 #pragma once
+
+#include <cmath>
 #include <optional>
+#include <vector>
 
 #define PI 3.141592653589793
 
