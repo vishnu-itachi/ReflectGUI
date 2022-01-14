@@ -16,9 +16,9 @@ public:
 	float y;
 
 	float length() { return std::sqrt(pow(x, 2) + pow(y, 2)); }
-	float dot(Point const& right) { return x * right.x + y * right.y; }
-	Point operator + (Point const& right) { return Point(x + right.x, y + right.y); }
-	Point operator - (Point const& right) { return Point(x - right.x, y - right.y); }
+	float dot(Point const &right) { return x * right.x + y * right.y; }
+	Point operator+(Point const &right) { return Point(x + right.x, y + right.y); }
+	Point operator-(Point const &right) { return Point(x - right.x, y - right.y); }
 };
 
 class Ray
@@ -43,7 +43,7 @@ public:
 	Point center;
 	float radius;
 
-	Circle() {}
+	Circle() { }
 	Circle(Point center, float radius)
 		:center(center), radius(radius) {}
 	void operator()(Circle const& obj) { center = obj.center; radius = obj.radius; }
@@ -54,13 +54,13 @@ class Scene
 {
 public:
 	std::vector<Circle> circles;
-	std::vector<Ray>  rays;
+	std::vector<Ray> rays;
 
 	Scene(std::vector<Circle> circles, std::vector<Ray> rays)
 		:circles(circles), rays(rays) {}
 
 	Scene(std::vector<Circle> circles, Ray ray)
-		:circles(circles)
+		: circles(circles)
 	{
 		rays.push_back(ray);
 	}
