@@ -95,29 +95,7 @@ void ReflectGUI::runProgramLoop(Scene scene)
 {
 	while (!glfwWindowShouldClose(this->window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
-		double posx, posy;
-		glfwGetCursorPos(this->window, &posx, &posy);
-		Ray ray = scene.rays[0];
-		float angle = atan2(this->screenHeight - posy - ray.start.y, posx - ray.start.x) * 180 / PI;
-		ray.angle = (int) angle;
-		scene.rays.clear();
-		scene.rays.push_back(ray);
-		scene.calculateAllRays();
-
-		glUniform1i(glGetUniformLocation(this->program, "numberCircles"), scene.circles.size());
-		for (int i = 0; i < scene.circles.size(); i++) {
-			glUniform1f(glGetUniformLocation(this->program, ("circles[" + std::to_string(i) + "].x").c_str()), scene.circles[i].center.x);
-			glUniform1f(glGetUniformLocation(this->program, ("circles[" + std::to_string(i) + "].y").c_str()), scene.circles[i].center.y);
-			glUniform1f(glGetUniformLocation(this->program, ("circles[" + std::to_string(i) + "].radius").c_str()), scene.circles[i].radius);
-		}
-		glUniform1i(glGetUniformLocation(this->program, "numberRays"), scene.rays.size());
-		for (int i = 0; i < scene.rays.size(); i++) {
-			glUniform2f(glGetUniformLocation(this->program, ("rays[" + std::to_string(i) + "].start").c_str()), scene.rays[i].start.x, scene.rays[i].start.y);
-			glUniform2f(glGetUniformLocation(this->program, ("rays[" + std::to_string(i) + "].end").c_str()), scene.rays[i].end.x, scene.rays[i].end.y);
-			glUniform1f(glGetUniformLocation(this->program, ("rays[" + std::to_string(i) + "].angle").c_str()), scene.rays[i].angle);
-		}
-		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
-
+		scene.drawScene(this->window, this->program, this->screenWidth, this->screenHeight);
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
 	}

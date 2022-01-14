@@ -1,5 +1,6 @@
 #include <cmath>
 #include <iostream>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -43,4 +44,30 @@ bool Scene::calculateNextRay()
 void Scene::calculateAllRays()
 {
 	while (calculateNextRay()) { }
+}
+
+void Scene::drawScene(GLFWwindow *window, int program, int screenWidth, int screenHeight)
+{
+	double posx, posy;
+	glfwGetCursorPos(window, &posx, &posy);
+	Ray ray = this->rays[0];
+	float angle = atan2(screenHeight - posy - ray.start.y, posx - ray.start.x) * 180 / PI;
+	ray.angle = (int) angle;
+	this->rays.clear();
+	this->rays.push_back(ray);
+	this->calculateAllRays();
+
+	glUniform1i(glGetUniformLocation(program, "numberCircles"), this->circles.size());
+	for (int i = 0; i < this->circles.size(); i++) {
+		glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].x").c_str()), this->circles[i].center.x);
+		glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].y").c_str()), this->circles[i].center.y);
+		glUniform1f(glGetUniformLocation(program, ("circles[" + std::to_string(i) + "].radius").c_str()), this->circles[i].radius);
+	}
+	glUniform1i(glGetUniformLocation(program, "numberRays"), this->rays.size());
+	for (int i = 0; i < this->rays.size(); i++) {
+		glUniform2f(glGetUniformLocation(program, ("rays[" + std::to_string(i) + "].start").c_str()), this->rays[i].start.x, this->rays[i].start.y);
+		glUniform2f(glGetUniformLocation(program, ("rays[" + std::to_string(i) + "].end").c_str()), this->rays[i].end.x, this->rays[i].end.y);
+		glUniform1f(glGetUniformLocation(program, ("rays[" + std::to_string(i) + "].angle").c_str()), this->rays[i].angle);
+	}
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, 1);
 }

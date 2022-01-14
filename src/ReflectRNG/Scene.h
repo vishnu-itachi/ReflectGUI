@@ -1,5 +1,8 @@
 #pragma once
 
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include <cmath>
 #include <optional>
 #include <vector>
@@ -67,4 +70,5 @@ public:
 
 	bool calculateNextRay();
 	void calculateAllRays();
+	void drawScene(GLFWwindow *window, int program, int screenWidth, int screenHeight);
 };
